@@ -11,9 +11,15 @@ export default $config({
   async run() {
     await import("./infra/storage");
     const api = await import("./infra/api");
+    await import("./infra/website");
+    const auth = await import("./infra/auth");
 
     return {
-      api: api.myApi.url,
+      UserPool: auth.userPool.id,
+      Region: aws.getRegionOutput().name,
+      IdentityPool: auth.identityPool.id,
+      UserPoolClient: auth.userPoolClient.id,
+      api: api.tideapi.url,
     };
   },
 });

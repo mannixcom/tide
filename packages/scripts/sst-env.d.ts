@@ -6,14 +6,30 @@ import "sst"
 export {}
 declare module "sst" {
   export interface Resource {
-    "MyApi": {
-      "name": string
-      "type": "sst.aws.Function"
+    "Frontend": {
+      "type": "sst.aws.StaticSite"
       "url": string
+    }
+    "IdentityPool": {
+      "id": string
+      "type": "sst.aws.CognitoIdentityPool"
     }
     "MyBucket": {
       "name": string
       "type": "sst.aws.Bucket"
+    }
+    "TideApi": {
+      "type": "sst.aws.ApiGatewayV2"
+      "url": string
+    }
+    "UserPool": {
+      "id": string
+      "type": "sst.aws.CognitoUserPool"
+    }
+    "UserPoolClient": {
+      "id": string
+      "secret": string
+      "type": "sst.aws.CognitoUserPoolClient"
     }
   }
 }
