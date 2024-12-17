@@ -1,55 +1,58 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { API } from "aws-amplify";
 import Form from "react-bootstrap/Form";
-import { NoteType } from "../types/note";
-import { s3Upload } from "../lib/awsLib";
+import { TideType } from "../types/note";
 import Stack from "react-bootstrap/Stack";
 import { onError } from "../lib/errorLib";
 import { useNavigate } from "react-router-dom";
 import LoaderButton from "../components/LoaderButton";
-import config from "../config";
+//import config from "../config";
 import "./NewNote.css";
 
 export default function NewNote() {
-  const file = useRef<null | File>(null);
+
   const nav = useNavigate();
-  const [content, setContent] = useState("");
+  const [tideForm, setTideForm] = useState<TideType>({
+    latitude: 0,
+    longitude: 0,
+    tag: '',
+    data: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
 
-  function validateForm() {
-    return content.length > 0;
+  // function validateForm() {
+  //   return tideForm.array.forEach(element => {
+  //     map(tide => tide.length > 0)
+  //   });
+  // }
+
+  // function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   if (event.currentTarget.files === null) return;
+  //   file.current = event.currentTarget.files[0];
+  // }
+  function handleFormUpdate(event: React.ChangeEvent<HTMLInputElement>){
+    const {name, value} = event.target;
+    console.log(name, value)
+    setTideForm((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }))
   }
 
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.currentTarget.files === null) return;
-    file.current = event.currentTarget.files[0];
-  }
-
-  function createNote(note: NoteType) {
-    return API.post("notes", "/notes", {
-      body: note,
+  function createNote(tide: TideType) {
+    return API.post("tides", "/location", {
+      body: tide,
     });
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
-      alert(
-        `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE / 1000000
-        } MB.`
-      );
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      const attachment = file.current
-        ? await s3Upload(file.current)
-        : undefined;
 
-      await createNote({ content, attachment });
+      await createNote(tideForm);
       nav("/");
     } catch (e) {
       onError(e);
@@ -60,16 +63,26 @@ export default function NewNote() {
   return (
     <div className="NewNote">
       <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="content">
+        <Form.Group controlId="latitude">
           <Form.Control
-            value={content}
-            as="textarea"
-            onChange={(e) => setContent(e.target.value)}
+            value={tideForm.latitude}
+            name={'latitude'}
+            onChange={handleFormUpdate}
           />
         </Form.Group>
-        <Form.Group className="mt-2" controlId="file">
-          <Form.Label>Attachment</Form.Label>
-          <Form.Control onChange={handleFileChange} type="file" />
+        <Form.Group controlId="longitude">
+          <Form.Control
+            value={tideForm.longitude}
+            name={"longitude"}
+            onChange={handleFormUpdate}
+          />
+        </Form.Group>
+        <Form.Group controlId="tag">
+          <Form.Control
+            value={tideForm.tag}
+            as="textarea"
+            onChange={handleFormUpdate}
+          />
         </Form.Group>
         <Stack>
           <LoaderButton
@@ -77,7 +90,6 @@ export default function NewNote() {
             type="submit"
             variant="primary"
             isLoading={isLoading}
-            disabled={!validateForm()}
           >
             Create
           </LoaderButton>

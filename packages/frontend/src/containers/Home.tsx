@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { API } from "aws-amplify";
-import { NoteType } from "../types/note";
+import { TideType } from "../types/note";
 import { onError } from "../lib/errorLib";
 import { BsPencilSquare } from "react-icons/bs";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -9,7 +9,7 @@ import { useAppContext } from "../lib/contextLib";
 import "./Home.css";
 
 export default function Home() {
-  const [notes, setNotes] = useState<Array<NoteType>>([]);
+  const [notes, setNotes] = useState<Array<TideType>>([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,6 +21,7 @@ export default function Home() {
 
       try {
         const notes = await loadNotes();
+        console.log(notes)
         setNotes(notes);
       } catch (e) {
         onError(e);
@@ -33,14 +34,15 @@ export default function Home() {
   }, [isAuthenticated]);
 
   function loadNotes() {
-    return API.get("notes", "/notes", {});
+    return API.get("tides", "/location", {});
   }
 
   function formatDate(str: undefined | string) {
     return !str ? "" : new Date(str).toLocaleString();
   }
 
-  function renderNotesList(notes: NoteType[]) {
+  function renderNotesList(notes: TideType[]) {
+    console.log(notes)
     return (
       <>
         <LinkContainer to="/notes/new">
@@ -49,16 +51,17 @@ export default function Home() {
             <span className="ms-2 fw-bold">Create a new note</span>
           </ListGroup.Item>
         </LinkContainer>
-        {notes.map(({ noteId, content, createdAt }) => (
-          <LinkContainer key={noteId} to={`/notes/${noteId}`}>
-            <ListGroup.Item action className="text-nowrap text-truncate">
-              <span className="fw-bold">{content.trim().split("\n")[0]}</span>
-              <br />
-              <span className="text-muted">
-                Created: {formatDate(createdAt)}
-              </span>
-            </ListGroup.Item>
-          </LinkContainer>
+        {notes.map(({ pointId }) => (
+          <div>{pointId}</div>
+          // <LinkContainer key={pointId} to={`/notes/${pointId}`}>
+          //   <ListGroup.Item action className="text-nowrap text-truncate">
+          //     <span className="fw-bold">{content.trim().split("\n")[0]}</span>
+          //     <br />
+          //     <span className="text-muted">
+          //       Created: {formatDate(createdAt)}
+          //     </span>
+          //   </ListGroup.Item>
+          // </LinkContainer>
         ))}
       </>
     );

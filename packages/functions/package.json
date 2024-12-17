@@ -2,10 +2,8 @@
   "name": "@tide/functions",
   "version": "0.0.0",
   "dependencies": {
+    "@aws-sdk/lib-dynamodb": "^3.713.0",
     "@tide/core": "*",
     "sst": "*"
-  },
-  "devDependencies": {
-    "@types/aws-lambda": "^8.10.137"
   }
 }
