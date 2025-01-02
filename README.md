@@ -72,4 +72,4 @@ In the template, we have an `api.ts`, and `storage.ts`. These export the created
 
 ---
 
-Join the SST community over on [Discord](https://discord.gg/sst) and follow us on [Twitter](https://twitter.com/SST_dev).
+Join the SST community over on [Discord](https://discord.gg/sst) and follow us on [Twitter](https://twitter.com/SST_dev)
